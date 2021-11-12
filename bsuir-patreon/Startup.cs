@@ -1,5 +1,6 @@
 using Data;
 using Domain;
+using Domain.Repositories.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-
+using Microsoft.OpenApi.Models;
 
 namespace Patreon
 {
@@ -32,6 +33,14 @@ namespace Patreon
             {
                 options.UseSqlServer(connection, b=>b.MigrationsAssembly("Domain"));
             });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "PatreonApiTest",
+                    Version = "v1"
+                });
+            });
 
             services.AddIdentity<User, IdentityRole>(options =>
             {
@@ -42,6 +51,12 @@ namespace Patreon
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<ApplicationContext>().AddDefaultTokenProviders();
+
+            //services.AddScoped<Repository<Post>>();
+            services.AddScoped<PostRepository>();
+            services.AddScoped<CommentRepository>();
+            services.AddScoped<LikeRepository>();
+            services.AddScoped<SubscriptionRepository>();
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -56,6 +71,8 @@ namespace Patreon
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "PatreonApiTest v1"));
             }
             else
             {
