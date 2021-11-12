@@ -36,9 +36,16 @@ namespace Patreon.Controllers
 
         // GET api/<UserController>/5
         [HttpGet("{id}")]
-        public DateTime Get(int id)
+        public async Task<ActionResult<User>> Get(string id)
         {
-            return DateTime.Now;
+            var user = await _userManager.FindByIdAsync(id);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            return user;
         }
 
         // POST api/<UserController>
