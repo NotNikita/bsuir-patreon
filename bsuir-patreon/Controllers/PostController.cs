@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Patreon.Controllers
 {
@@ -16,10 +19,12 @@ namespace Patreon.Controllers
     public class PostController : ControllerBase
     {
         private readonly PostRepository _postRepository;
+        private readonly UserManager<User> _userManager;
 
-        public PostController(ApplicationContext context, PostRepository postRepository)
+        public PostController(PostRepository postRepository, UserManager<User> userManager)
         {
             _postRepository = postRepository;
+            _userManager = userManager;
         }
 
         // GET: api/Post
@@ -33,7 +38,7 @@ namespace Patreon.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
-            var post = await _postRepository.FindById(id);
+            var post = await _postRepository.GetPostWithData(id);
 
             if (post == null)
             {
@@ -79,6 +84,20 @@ namespace Patreon.Controllers
             }
             await _postRepository.Delete(post);
 
+            return NoContent();
+        }
+
+        //api/Post/addlike/{}
+        [HttpPost("addlike{postId}")]
+        public async Task<IActionResult> AddLike(int postId)
+        {
+
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+                await _postRepository.AddLike(postId, user);
+            }
             return NoContent();
         }
 
