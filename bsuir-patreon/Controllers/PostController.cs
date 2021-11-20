@@ -21,7 +21,7 @@ namespace Patreon.Controllers
         private readonly PostRepository _postRepository;
         private readonly UserManager<User> _userManager;
 
-        public PostController(ApplicationContext context, PostRepository postRepository, UserManager<User> userManager)
+        public PostController(PostRepository postRepository, UserManager<User> userManager)
         {
             _postRepository = postRepository;
             _userManager = userManager;
@@ -38,7 +38,6 @@ namespace Patreon.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Post>> GetPost(int id)
         {
-            var post1 = await _postRepository.FindById(id);
             var post = await _postRepository.GetPostWithData(id);
 
             if (post == null)
@@ -88,17 +87,15 @@ namespace Patreon.Controllers
             return NoContent();
         }
 
-        //api/Post/addlike/{}{}
+        //api/Post/addlike/{}
         [HttpPost("addlike{postId}")]
         public async Task<IActionResult> AddLike(int postId)
         {
 
-            var name = string.Empty;
-            User user;
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
-                name = identity.FindFirst(ClaimTypes.Name).Value;
-                user = await _userManager.FindByNameAsync(name);
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
                 await _postRepository.AddLike(postId, user);
             }
             return NoContent();
