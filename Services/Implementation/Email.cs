@@ -37,5 +37,6 @@ namespace Services.Implementation
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
             }
+        }
     }
 }
