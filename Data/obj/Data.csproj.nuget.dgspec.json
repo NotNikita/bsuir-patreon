@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Data\\Data.csproj": {}
+    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Data\\Data.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Data\\Data.csproj": {
+    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Data\\Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Data\\Data.csproj",
+        "projectUniqueName": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Data\\Data.csproj",
         "projectName": "Data",
-        "projectPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Data\\Data.csproj",
+        "projectPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Data\\Data.csproj",
         "packagesPath": "C:\\Users\\Forbz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Data\\obj\\",
+        "outputPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"

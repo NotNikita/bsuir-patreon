@@ -14,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Services.Implementation;
+using Services.Interface;
 using System.Text;
 
 namespace Patreon
@@ -84,11 +86,12 @@ namespace Patreon
                 options.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<ApplicationContext>().AddDefaultTokenProviders();
 
-            //services.AddScoped<Repository<Post>>();
+
             services.AddScoped<PostRepository>();
             services.AddScoped<CommentRepository>();
             services.AddScoped<LikeRepository>();
             services.AddScoped<SubscriptionRepository>();
+            services.AddScoped<IEmail, Email>();
 
             services.AddAuthentication(options =>
             {
