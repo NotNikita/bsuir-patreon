@@ -10,3 +10,15 @@ C:\Users\Forbz\source\repos\NotNikita\Data\obj\Debug\net5.0\Data.csproj.CoreComp
 C:\Users\Forbz\source\repos\NotNikita\Data\obj\Debug\net5.0\Data.dll
 C:\Users\Forbz\source\repos\NotNikita\Data\obj\Debug\net5.0\ref\Data.dll
 C:\Users\Forbz\source\repos\NotNikita\Data\obj\Debug\net5.0\Data.pdb
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\bin\Debug\net5.0\Data.deps.json
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\bin\Debug\net5.0\Data.dll
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\bin\Debug\net5.0\ref\Data.dll
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\bin\Debug\net5.0\Data.pdb
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.csproj.AssemblyReference.cache
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.AssemblyInfoInputs.cache
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.AssemblyInfo.cs
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.csproj.CoreCompileInputs.cache
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.dll
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\ref\Data.dll
+C:\Users\Forbz\source\repos\NotNikita\bsuir-patreon\Data\obj\Debug\net5.0\Data.pdb
