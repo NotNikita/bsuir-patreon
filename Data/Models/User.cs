@@ -12,6 +12,7 @@ namespace Data
         public string Surname { get; set; }
         public string NickName { get; set; }
         public uint Balance { get; set; }
+        public IEnumerable<Subscription> Subscriptions { get; set; }
 
     }
 }

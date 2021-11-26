@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using Microsoft.AspNetCore.Identity;
 
 namespace Patreon.Controllers
 {
@@ -17,11 +18,13 @@ namespace Patreon.Controllers
     {
         private readonly ApplicationContext _context;
         private readonly SubscriptionRepository _subscriptionRepository;
+        private readonly UserManager<User> _userManager;
 
-        public SubscriptionsController(ApplicationContext context, SubscriptionRepository subscriptionRepository)
+        public SubscriptionsController(ApplicationContext context, SubscriptionRepository subscriptionRepository, UserManager<User> userManager)
         {
             _context = context;
             _subscriptionRepository = subscriptionRepository;
+            _userManager = userManager;
         }
 
         // GET: api/Subscriptions
@@ -68,6 +71,15 @@ namespace Patreon.Controllers
             await _subscriptionRepository.Create(subscription);
 
             return CreatedAtAction("GetSubscription", new { id = subscription.Id }, subscription);
+        }
+
+        //POST: api/Subscriptions
+        [HttpPost]
+        public async Task<ActionResult<Subscription>> Subscribe(string nick, Subscription subscription)
+        {
+            var user = _userManager.FindByNameAsync(nick);
+            return null;
+
         }
 
         // DELETE: api/Subscriptions/5
