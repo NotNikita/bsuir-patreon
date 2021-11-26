@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Services\\Services.csproj": {}
+    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Services\\Services.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Services\\Services.csproj": {
+    "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Services\\Services.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Services\\Services.csproj",
+        "projectUniqueName": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Services\\Services.csproj",
         "projectName": "Services",
-        "projectPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Services\\Services.csproj",
+        "projectPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Services\\Services.csproj",
         "packagesPath": "C:\\Users\\Forbz\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\Services\\obj\\",
+        "outputPath": "C:\\Users\\Forbz\\source\\repos\\NotNikita\\bsuir-patreon\\Services\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
@@ -43,9 +43,17 @@
         "net5.0": {
           "targetAlias": "net5.0",
           "dependencies": {
+            "MailKit": {
+              "target": "Package",
+              "version": "[2.15.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[5.0.12, )"
+            },
+            "MimeKit": {
+              "target": "Package",
+              "version": "[2.15.1, )"
             }
           },
           "imports": [
