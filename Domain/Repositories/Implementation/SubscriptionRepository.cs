@@ -16,9 +16,9 @@ namespace Domain.Repositories.Implementation
             _context = context;
         }
 
-        public async Task<List<Subscription>> GetAllPostsWithUsers()
+        public async Task<List<Subscription>> GetAllSubsWithUsers()
         {
-            var subscriptions = await _context.Subscriptions.Include(x => x.User).Include(x=>x.Author).ToListAsync();
+            var subscriptions = await _context.Subscriptions.Include(x => x.User).Include(x=>x.Author).Include(x=>x.Sub).ToListAsync();
             return subscriptions;
         }
     }

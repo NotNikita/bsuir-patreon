@@ -11,6 +11,8 @@ using Domain.Repositories.Implementation;
 using Microsoft.AspNetCore.Identity;
 using Data.Models;
 using System.Security.Claims;
+using Hangfire;
+using Services.Implementation;
 
 namespace Patreon.Controllers
 {
@@ -21,14 +23,22 @@ namespace Patreon.Controllers
         private readonly SubscriptionRepository _subscriptionRepository;
         private readonly UserManager<User> _userManager;
         private readonly SubscriptionTypeRepository _subscriptionTypeRepository;
+        private readonly IRecurringJobManager _recurringJobManager;
 
-        public SubscriptionsController(SubscriptionRepository subscriptionRepository, UserManager<User> userManager, SubscriptionTypeRepository subscriptionTypeRepository)
+        public SubscriptionsController(SubscriptionRepository subscriptionRepository, UserManager<User> userManager, SubscriptionTypeRepository subscriptionTypeRepository, IRecurringJobManager recurringJobManager)
         {
             _subscriptionRepository = subscriptionRepository;
             _userManager = userManager;
             _subscriptionTypeRepository = subscriptionTypeRepository;
+            _recurringJobManager = recurringJobManager;
         }
 
+        [HttpGet("/ReccuringJob")]
+        public ActionResult CreateReccuringJub()
+        {
+            _recurringJobManager.AddOrUpdate<SubscribeService>("1", x => x.CheckSubscribe(), "0 1 ? ? ? ?");
+            return Ok();
+        }
         // GET: api/Subscriptions
         [HttpGet]
         public async Task<IEnumerable<Subscription>> GetSubscriptions()

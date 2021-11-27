@@ -24,13 +24,36 @@ namespace Services.Implementation
 
         public async Task CheckSubscribe()
         {
-            var subscriptions = await _subscriptionRepository.GetAllPostsWithUsers();
+            var subscriptions = await _subscriptionRepository.GetAllSubsWithUsers();
+            string message = "";
+            string subject = "";
             foreach(var sub in subscriptions)
             {
-                if(sub.EndTime <= DateTime.UtcNow)
+                if(sub.EndTime <= DateTime.UtcNow && sub.Sub.Price > sub.User.Balance)
                 {
-                    var message = $"Привет! Твоя подписка на пользователя {sub.User.UserName} закончилась";
+                    message = $"Привет {sub.User.UserName}! Твоя подписка на пользователя {sub.Author.UserName} закончилась и баланс на счету не позволяет продлить подписку," +
+                        $"поэтому твоя подписка была отменена";
+                    subject = $"Отмена подписки";
+                    await _subscriptionRepository.Delete(sub);
+                    await _email.SendAsync(sub.User.Email, subject, message);
+
                 }
+                else if (sub.EndTime <= DateTime.UtcNow && sub.Sub.Price < sub.User.Balance)
+                {
+                    message = $"Привет {sub.User.UserName}! Твоя подписка на пользователя {sub.Author.UserName} была автоматически продлена";
+                    subject = $"Продление подписки";
+                    sub.User.Balance -= sub.Sub.Price;
+                    var dateDiff = sub.EndTime - sub.StartTime;
+                    sub.StartTime = DateTime.UtcNow;
+                    sub.EndTime = sub.StartTime + dateDiff;
+                    await _subscriptionRepository.Update(sub);
+                    await _userManager.UpdateAsync(sub.User);
+                    await _email.SendAsync(sub.User.Email, subject, message);
+
+                }
+
+                
+
             }
         }
 
