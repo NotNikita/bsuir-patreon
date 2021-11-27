@@ -81,6 +81,9 @@ namespace Patreon.Controllers
                 subscription.Author = author;
                 subscription.Sub = authorSub;
 
+                user.Balance -= subscription.Sub.Price;
+
+                await _userManager.UpdateAsync(user);
                 await _subscriptionRepository.Create(subscription);
             }
             

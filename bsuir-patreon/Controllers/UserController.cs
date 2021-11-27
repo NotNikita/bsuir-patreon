@@ -43,12 +43,26 @@ namespace Patreon.Controllers
         {
             var user = await _userRepository.GetUserWithData(username);
 
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
 
             return user;
+        }
+
+        [HttpGet("followers/{userId}")]
+        public async Task<IEnumerable<User>> GetFollowers(string userId)
+        {
+            var followers = await _userRepository.GetFollowers(userId);
+            return followers;
+        }
+
+        [HttpGet("subscribes/{userId}")]
+        public async Task<IEnumerable<User>> GetSubscribes(string userId)
+        {
+            var subscriptions = await _userRepository.GetSubscriptions(userId);
+            return subscriptions;
         }
     }
 }
