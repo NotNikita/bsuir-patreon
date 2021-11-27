@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace Patreon.Controllers
 {
@@ -17,33 +19,29 @@ namespace Patreon.Controllers
     {
         private readonly ApplicationContext _context;
         private readonly CommentRepository _commentRepository;
+        private readonly UserManager<User> _userManager;
+        private readonly PostRepository _postRepository;
 
-        public CommentsController(ApplicationContext context, CommentRepository commentRepository)
+        public CommentsController(ApplicationContext context, CommentRepository commentRepository, UserManager<User> userManager, PostRepository postRepository)
         {
             _context = context;
             _commentRepository = commentRepository;
+            _userManager = userManager;
+            _postRepository = postRepository;
         }
 
         // GET: api/Comments
         [HttpGet]
         public async Task<IEnumerable<Comment>> GetComments()
         {
-            //return await _context.Comments.ToListAsync();
             return await _commentRepository.GetAll();
         }
 
         // GET: api/Comments/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Comment>> GetComment(int id)
+        public async Task<IEnumerable<Comment>> GetComment(int id)
         {
-            //var comment = await _context.Comments.FindAsync(id);
-            var comment = await _commentRepository.FindById(id);
-
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
+            var comment = await _commentRepository.GetPostComments(id);
             return comment;
         }
 
@@ -57,7 +55,6 @@ namespace Patreon.Controllers
                 return BadRequest();
             }
 
-            //_context.Entry(comment).State = EntityState.Modified;
             await _commentRepository.Update(comment);
 
             return NoContent();
@@ -65,13 +62,20 @@ namespace Patreon.Controllers
 
         // POST: api/Comments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(Comment comment)
+        [HttpPost("{postId}")]
+        public async Task<ActionResult<Comment>> PostCommentToPost(Comment comment, int postId)
         {
-            //_context.Comments.Add(comment);
-            //await _context.SaveChangesAsync();
+            if(HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+                var post = await _postRepository.FindById(postId);
 
-            await _commentRepository.Create(comment);
+                comment.Author = user;
+                comment.Post = post;
+                await _commentRepository.Create(comment);
+            }
+            
 
             return CreatedAtAction("GetComment", new { id = comment.Id }, comment);
         }
@@ -80,15 +84,12 @@ namespace Patreon.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteComment(int id)
         {
-            //var comment = await _context.Comments.FindAsync(id);
             var comment = await _commentRepository.FindById(id);
             if (comment == null)
             {
                 return NotFound();
             }
             await _commentRepository.Delete(comment);
-            //_context.Comments.Remove(comment);
-            //await _context.SaveChangesAsync();
 
             return NoContent();
         }

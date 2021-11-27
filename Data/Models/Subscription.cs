@@ -8,10 +8,9 @@ namespace Data
 {
     public class Subscription:BaseEntity
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
+        public SubscriptionType Sub { get; set; }
         public User User { get; set; }
-        public Author Author { get; set; }
+        public User Author { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 

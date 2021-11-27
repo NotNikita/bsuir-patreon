@@ -29,7 +29,7 @@ namespace Services.Implementation
             {
                 if(sub.EndTime <= DateTime.UtcNow)
                 {
-                    var message = $"Привет! Твоя подписка на пользователя {sub.User.NickName} закончилась";
+                    var message = $"Привет! Твоя подписка на пользователя {sub.User.UserName} закончилась";
                 }
             }
         }

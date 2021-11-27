@@ -1,6 +1,7 @@
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using Domain.Repositories.Interface;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -92,6 +93,8 @@ namespace Patreon
             services.AddScoped<CommentRepository>();
             services.AddScoped<LikeRepository>();
             services.AddScoped<SubscriptionRepository>();
+            services.AddScoped<UserRepository>();
+            services.AddScoped<SubscriptionTypeRepository>();
 
             services.AddAuthentication(options =>
             {

@@ -9,6 +9,8 @@ using Data;
 using Domain;
 using Domain.Repositories.Implementation;
 using Microsoft.AspNetCore.Identity;
+using Data.Models;
+using System.Security.Claims;
 
 namespace Patreon.Controllers
 {
@@ -16,15 +18,15 @@ namespace Patreon.Controllers
     [ApiController]
     public class SubscriptionsController : ControllerBase
     {
-        private readonly ApplicationContext _context;
         private readonly SubscriptionRepository _subscriptionRepository;
         private readonly UserManager<User> _userManager;
+        private readonly SubscriptionTypeRepository _subscriptionTypeRepository;
 
-        public SubscriptionsController(ApplicationContext context, SubscriptionRepository subscriptionRepository, UserManager<User> userManager)
+        public SubscriptionsController(SubscriptionRepository subscriptionRepository, UserManager<User> userManager, SubscriptionTypeRepository subscriptionTypeRepository)
         {
-            _context = context;
             _subscriptionRepository = subscriptionRepository;
             _userManager = userManager;
+            _subscriptionTypeRepository = subscriptionTypeRepository;
         }
 
         // GET: api/Subscriptions
@@ -63,22 +65,27 @@ namespace Patreon.Controllers
             return NoContent();
         }
 
-        // POST: api/Subscriptions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Subscription>> PostSubscription(Subscription subscription)
+        //POST: api/Subscriptions
+        [HttpPost("{idSubType}")]
+        public async Task<ActionResult<Subscription>> Subscribe(Subscription subscription, int idSubType)
         {
-            await _subscriptionRepository.Create(subscription);
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                var authorSub = await _subscriptionTypeRepository.FindByIdWithData(idSubType);
+                var author = authorSub.Author;
+
+                subscription.User = user;
+                subscription.Author = author;
+                subscription.Sub = authorSub;
+
+                await _subscriptionRepository.Create(subscription);
+            }
+            
 
             return CreatedAtAction("GetSubscription", new { id = subscription.Id }, subscription);
-        }
-
-        //POST: api/Subscriptions
-        [HttpPost]
-        public async Task<ActionResult<Subscription>> Subscribe(string nick, Subscription subscription)
-        {
-            var user = _userManager.FindByNameAsync(nick);
-            return null;
 
         }
 

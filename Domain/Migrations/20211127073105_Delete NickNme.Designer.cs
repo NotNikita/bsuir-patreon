@@ -4,14 +4,16 @@ using Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Domain.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20211127073105_Delete NickNme")]
+    partial class DeleteNickNme
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,32 +68,6 @@ namespace Domain.Migrations
                     b.ToTable("Likes");
                 });
 
-            modelBuilder.Entity("Data.Models.SubscriptionType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<long>("Price")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("SubscriptionTypes");
-                });
-
             modelBuilder.Entity("Data.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -125,14 +101,17 @@ namespace Domain.Migrations
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("SubId")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -140,8 +119,6 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
-
-                    b.HasIndex("SubId");
 
                     b.HasIndex("UserId");
 
@@ -383,15 +360,6 @@ namespace Domain.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("Data.Models.SubscriptionType", b =>
-                {
-                    b.HasOne("Data.User", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
-
-                    b.Navigation("Author");
-                });
-
             modelBuilder.Entity("Data.Post", b =>
                 {
                     b.HasOne("Data.User", "Author")
@@ -407,17 +375,11 @@ namespace Domain.Migrations
                         .WithMany("Followers")
                         .HasForeignKey("AuthorId");
 
-                    b.HasOne("Data.Models.SubscriptionType", "Sub")
-                        .WithMany()
-                        .HasForeignKey("SubId");
-
                     b.HasOne("Data.User", "User")
                         .WithMany("Subscriptions")
                         .HasForeignKey("UserId");
 
                     b.Navigation("Author");
-
-                    b.Navigation("Sub");
 
                     b.Navigation("User");
                 });
