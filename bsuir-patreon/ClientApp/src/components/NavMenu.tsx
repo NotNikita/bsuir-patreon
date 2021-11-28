@@ -1,42 +1,71 @@
 import * as React from 'react';
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
-import './NavMenu.css';
+import { PersonCircle } from 'react-bootstrap-icons';
+import { ReactComponent as Logo } from '../assets/svg/crown.svg';
 
-export default class NavMenu extends React.PureComponent<{}, { isOpen: boolean }> {
-    public state = {
-        isOpen: false
-    };
+//i mport './NavMenu.css';
 
-    public render() {
-        return (
-            <header>
-                <Navbar className="navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3" light>
-                    <Container>
-                        <NavbarBrand tag={Link} to="/">Patreon</NavbarBrand>
-                        <NavbarToggler onClick={this.toggle} className="mr-2"/>
-                        <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={this.state.isOpen} navbar>
-                            <ul className="navbar-nav flex-grow">
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/counter">Counter</NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/fetch-data">Fetch data</NavLink>
-                                </NavItem>
-                            </ul>
-                        </Collapse>
-                    </Container>
-                </Navbar>
-            </header>
-        );
-    }
+const Header = styled.header({
+    height: '70px',
+    width: '100%',
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: 25
+});
+const LogoContainer = styled.div({
+    height: '100%',
+    width: 70,
+    padding: 25
+});
+const Options = styled.div({
+    width: '50%',
+    height: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end'
+});
+const Option = styled.div({
+    padding: '10px 15px',
+    cursor: 'pointer'
+});
 
-    private toggle = () => {
-        this.setState({
-            isOpen: !this.state.isOpen
-        });
-    }
-}
+const NavMenu = () => {
+    const [userStatus] = React.useState<boolean>(false);
+
+    return (
+        <Header>
+            <LogoContainer>
+                <Link to='/'>
+                    <Logo className='logo' />
+                </Link>
+            </LogoContainer>
+            <Options>
+                <Option>
+                    <Link to='/counter'>
+                        COUNTER
+                    </Link>
+                </Option>
+                <Option>
+                    <Link to='/fetch-data'>
+                        FETCH DATA
+                    </Link>
+                </Option>
+
+                {userStatus ? (
+                    <Option onClick={() => console.log('call signOut function here')}>
+                        SIGN OUT
+                    </Option>
+                ) : (
+                    <Option>
+                        <Link to='/signin'>
+                            SIGN IN
+                        </Link>
+                    </Option>
+                )}
+                <PersonCircle size={30} />
+            </Options>
+        </Header>
+    )
+};
+export default NavMenu;
