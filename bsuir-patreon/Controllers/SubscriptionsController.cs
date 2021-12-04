@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using Microsoft.AspNetCore.Identity;
+using Data.Models;
+using System.Security.Claims;
+using Hangfire;
+using Services.Implementation;
 
 namespace Patreon.Controllers
 {
@@ -15,15 +20,25 @@ namespace Patreon.Controllers
     [ApiController]
     public class SubscriptionsController : ControllerBase
     {
-        private readonly ApplicationContext _context;
         private readonly SubscriptionRepository _subscriptionRepository;
+        private readonly UserManager<User> _userManager;
+        private readonly SubscriptionTypeRepository _subscriptionTypeRepository;
+        private readonly IRecurringJobManager _recurringJobManager;
 
-        public SubscriptionsController(ApplicationContext context, SubscriptionRepository subscriptionRepository)
+        public SubscriptionsController(SubscriptionRepository subscriptionRepository, UserManager<User> userManager, SubscriptionTypeRepository subscriptionTypeRepository, IRecurringJobManager recurringJobManager)
         {
-            _context = context;
             _subscriptionRepository = subscriptionRepository;
+            _userManager = userManager;
+            _subscriptionTypeRepository = subscriptionTypeRepository;
+            _recurringJobManager = recurringJobManager;
         }
 
+        [HttpGet("/ReccuringJob")]
+        public ActionResult CreateReccuringJub()
+        {
+            _recurringJobManager.AddOrUpdate<SubscribeService>("1", x => x.CheckSubscribe(), "0 1 ? ? ? ?");
+            return Ok();
+        }
         // GET: api/Subscriptions
         [HttpGet]
         public async Task<IEnumerable<Subscription>> GetSubscriptions()
@@ -60,14 +75,31 @@ namespace Patreon.Controllers
             return NoContent();
         }
 
-        // POST: api/Subscriptions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Subscription>> PostSubscription(Subscription subscription)
+        //POST: api/Subscriptions
+        [HttpPost("{idSubType}")]
+        public async Task<ActionResult<Subscription>> Subscribe(Subscription subscription, int idSubType)
         {
-            await _subscriptionRepository.Create(subscription);
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                var authorSub = await _subscriptionTypeRepository.FindByIdWithData(idSubType);
+                var author = authorSub.Author;
+
+                subscription.User = user;
+                subscription.Author = author;
+                subscription.Sub = authorSub;
+
+                user.Balance -= subscription.Sub.Price;
+
+                await _userManager.UpdateAsync(user);
+                await _subscriptionRepository.Create(subscription);
+            }
+            
 
             return CreatedAtAction("GetSubscription", new { id = subscription.Id }, subscription);
+
         }
 
         // DELETE: api/Subscriptions/5

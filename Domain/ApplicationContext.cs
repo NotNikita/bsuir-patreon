@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -19,6 +20,20 @@ namespace Domain
         public DbSet<Like> Likes { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<SubscriptionType> SubscriptionTypes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<Subscription>()
+                .HasOne(u => u.User)
+                .WithMany(f => f.Subscriptions);
+
+            builder.Entity<Subscription>()
+                .HasOne(u => u.Author)
+                .WithMany(f => f.Followers);
+        }
 
     }
 }

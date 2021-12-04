@@ -19,9 +19,15 @@ namespace Domain.Repositories.Implementation
             _userManager = userManager;
         }
 
+        public async Task<IEnumerable<Post>> GetAuthorPosts(User user)
+        {
+            var posts = await _context.Posts.Include(x => x.Likes).ThenInclude(x=>x.Author).Include(x => x.Comments).ThenInclude(x => x.Author).Where(x => x.Author.Id == user.Id).ToListAsync();
+            return posts;
+        }
+
         public async Task<Post> GetPostWithData(int postId)
         {
-            var post = await _context.Posts.Include(x => x.Likes).FirstAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Likes).Include(x=>x.Comments).FirstAsync(x => x.Id == postId);
             return post;
         }
 

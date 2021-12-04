@@ -47,6 +47,23 @@ namespace Patreon.Controllers
 
             return post;
         }
+        // POST: api/Post/getMyPosts
+        [HttpPost("getMyPosts")]
+        public async Task<IEnumerable<Post>> GetMyPosts()
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                var posts = await _postRepository.GetAuthorPosts(user);
+
+                return posts;
+
+            }
+
+            return null;
+        }
 
         // PUT: api/Post/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
@@ -68,7 +85,15 @@ namespace Patreon.Controllers
         [HttpPost]
         public async Task<ActionResult<Post>> PostPost(Post post)
         {
-            await _postRepository.Create(post);
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                post.Author = user;
+                await _postRepository.Create(post);
+            }
+            
 
             return CreatedAtAction("GetPost", new { id = post.Id }, post);
         }

@@ -1,6 +1,8 @@
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using Domain.Repositories.Interface;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +38,9 @@ namespace Patreon
                 .AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("ConnectionDb")));
+            services.AddHangfireServer();
 
             string connection = Configuration.GetConnectionString("ConnectionDb");
             services.AddDbContext<ApplicationContext>(options =>
@@ -86,11 +91,12 @@ namespace Patreon
                 options.Password.RequireDigit = false;
             }).AddEntityFrameworkStores<ApplicationContext>().AddDefaultTokenProviders();
 
-
             services.AddScoped<PostRepository>();
             services.AddScoped<CommentRepository>();
             services.AddScoped<LikeRepository>();
             services.AddScoped<SubscriptionRepository>();
+            services.AddScoped<UserRepository>();
+            services.AddScoped<SubscriptionTypeRepository>();
             services.AddScoped<IEmail, Email>();
 
             services.AddAuthentication(options =>
@@ -151,6 +157,8 @@ namespace Patreon
             app.UseAuthentication();
             app.UseAuthorization();
 
+            
+            app.UseHangfireDashboard();
             
 
             app.UseEndpoints(endpoints =>

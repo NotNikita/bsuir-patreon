@@ -1,5 +1,6 @@
 ﻿using Data;
 using Domain;
+using Domain.Repositories.Implementation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,12 +20,14 @@ namespace Patreon.Controllers
         private readonly ApplicationContext _context;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly UserRepository _userRepository;
 
-        public UserController(ApplicationContext context, UserManager<User> userManager, SignInManager<User> signInManager)
+        public UserController(ApplicationContext context, UserManager<User> userManager, SignInManager<User> signInManager, UserRepository userRepository)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
+            _userRepository = userRepository;
         }
         // GET: api/<UserController>
         [HttpGet]
@@ -34,13 +37,13 @@ namespace Patreon.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET api/<UserController>/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(string id)
+        // GET api/<UserController>/forbz
+        [HttpGet("{username}")]
+        public async Task<ActionResult<User>> Get(string username)
         {
-            var user = await _userManager.FindByIdAsync(id);
+            var user = await _userRepository.GetUserWithData(username);
 
-            if(user == null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -48,22 +51,18 @@ namespace Patreon.Controllers
             return user;
         }
 
-        // POST api/<UserController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpGet("followers/{userId}")]
+        public async Task<IEnumerable<User>> GetFollowers(string userId)
         {
+            var followers = await _userRepository.GetFollowers(userId);
+            return followers;
         }
 
-        // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet("subscribes/{userId}")]
+        public async Task<IEnumerable<User>> GetSubscribes(string userId)
         {
-        }
-
-        // DELETE api/<UserController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var subscriptions = await _userRepository.GetSubscriptions(userId);
+            return subscriptions;
         }
     }
 }
