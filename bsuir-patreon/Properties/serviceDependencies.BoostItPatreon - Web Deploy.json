@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "mssql1": {
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourcegroups/[parameters('resourceGroupName')]/providers/Microsoft.Sql/servers/patreon-boostit-freedbserver1/databases/Patreon_BoostIt_Free",
+      "type": "mssql.azure",
+      "connectionId": "ConnectionStrings:ConnectionDb",
+      "secretStore": "AzureAppSettings"
+    }
+  }
+}

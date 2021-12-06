@@ -12,6 +12,8 @@ namespace Data
         public string FileUrl { get; set; }
         public IEnumerable<Like> Likes { get; set; }
         public IEnumerable<Comment> Comments { get; set; }
+        public DateTime PublicationDate { get; set; }
+        public bool IsChecked { get; set; }
 
     }
 }

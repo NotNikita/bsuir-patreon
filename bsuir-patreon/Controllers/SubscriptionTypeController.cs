@@ -11,6 +11,7 @@ using Domain.Repositories.Implementation;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Data;
+using Data.Models.DTO;
 
 namespace Patreon.Controllers
 {
@@ -53,18 +54,28 @@ namespace Patreon.Controllers
         // POST: api/SubscriptionType
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<SubscriptionType>> PostSubscriptionType(SubscriptionType subscriptionType)
+        public async Task<ActionResult<SubscriptionType>> PostSubscriptionType([FromBody] SubTypeModel model)
         {
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
                 var name = identity.FindFirst(ClaimTypes.Name).Value;
                 var author = await _userManager.FindByNameAsync(name);
-                subscriptionType.Author = author;
+                
+                
+                SubscriptionType subscriptionType = new SubscriptionType
+                {
+                    Name = model.Name,
+                    Description = model.Description,
+                    Price = model.Price,
+                    Author = author,
+                    Duration = model.Duration
+                };
+                
                 await _subscriptionTypeRepository.Create(subscriptionType);
             }
 
-
-            return CreatedAtAction("GetSubscriptionType", new { id = subscriptionType.Id }, subscriptionType);
+            return Ok();
+            //return CreatedAtAction("GetSubscriptionType", new { id = subscriptionType.Id }, subscriptionType);
         }
 
         // DELETE: api/SubscriptionType/5

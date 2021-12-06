@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Domain.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20211126173017_Add Author")]
-    partial class AddAuthor
+    [Migration("20211206115400_premoderation")]
+    partial class premoderation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -68,6 +68,35 @@ namespace Domain.Migrations
                     b.ToTable("Likes");
                 });
 
+            modelBuilder.Entity("Data.Models.SubscriptionType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("AuthorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Price")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.ToTable("SubscriptionTypes");
+                });
+
             modelBuilder.Entity("Data.Post", b =>
                 {
                     b.Property<int>("Id")
@@ -83,6 +112,12 @@ namespace Domain.Migrations
 
                     b.Property<string>("FileUrl")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsChecked")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("PublicationDate")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
@@ -101,17 +136,14 @@ namespace Domain.Migrations
                     b.Property<string>("AuthorId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("EndTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("SubId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -119,6 +151,8 @@ namespace Domain.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("SubId");
 
                     b.HasIndex("UserId");
 
@@ -133,18 +167,11 @@ namespace Domain.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<string>("AuthorId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<long>("Balance")
                         .HasColumnType("bigint");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -161,9 +188,6 @@ namespace Domain.Migrations
                         .HasColumnType("datetimeoffset");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NickName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
@@ -198,8 +222,6 @@ namespace Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuthorId");
-
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -209,8 +231,6 @@ namespace Domain.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -344,13 +364,6 @@ namespace Domain.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Data.Models.Author", b =>
-                {
-                    b.HasBaseType("Data.User");
-
-                    b.HasDiscriminator().HasValue("Author");
-                });
-
             modelBuilder.Entity("Data.Comment", b =>
                 {
                     b.HasOne("Data.User", "Author")
@@ -381,6 +394,15 @@ namespace Domain.Migrations
                     b.Navigation("Post");
                 });
 
+            modelBuilder.Entity("Data.Models.SubscriptionType", b =>
+                {
+                    b.HasOne("Data.User", "Author")
+                        .WithMany()
+                        .HasForeignKey("AuthorId");
+
+                    b.Navigation("Author");
+                });
+
             modelBuilder.Entity("Data.Post", b =>
                 {
                     b.HasOne("Data.User", "Author")
@@ -392,9 +414,13 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Data.Subscription", b =>
                 {
-                    b.HasOne("Data.Models.Author", "Author")
-                        .WithMany()
+                    b.HasOne("Data.User", "Author")
+                        .WithMany("Followers")
                         .HasForeignKey("AuthorId");
+
+                    b.HasOne("Data.Models.SubscriptionType", "Sub")
+                        .WithMany()
+                        .HasForeignKey("SubId");
 
                     b.HasOne("Data.User", "User")
                         .WithMany("Subscriptions")
@@ -402,14 +428,9 @@ namespace Domain.Migrations
 
                     b.Navigation("Author");
 
-                    b.Navigation("User");
-                });
+                    b.Navigation("Sub");
 
-            modelBuilder.Entity("Data.User", b =>
-                {
-                    b.HasOne("Data.Models.Author", null)
-                        .WithMany("Followers")
-                        .HasForeignKey("AuthorId");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -472,12 +493,9 @@ namespace Domain.Migrations
 
             modelBuilder.Entity("Data.User", b =>
                 {
-                    b.Navigation("Subscriptions");
-                });
-
-            modelBuilder.Entity("Data.Models.Author", b =>
-                {
                     b.Navigation("Followers");
+
+                    b.Navigation("Subscriptions");
                 });
 #pragma warning restore 612, 618
         }

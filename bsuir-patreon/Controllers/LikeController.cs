@@ -44,45 +44,5 @@ namespace Patreon.Controllers
 
             return like;
         }
-
-        // PUT: api/Like/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLike(int id, Like like)
-        {
-            if (id != like.Id)
-            {
-                return BadRequest();
-            }
-
-            await _likeRepository.Update(like);
-
-            return NoContent();
-        }
-
-        // POST: api/Like
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Like>> PostLike(Like like)
-        {
-            await _likeRepository.Create(like);
-
-            return CreatedAtAction("GetLike", new { id = like.Id }, like);
-        }
-
-        // DELETE: api/Like/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLike(int id)
-        {
-            var like = await _likeRepository.FindById(id);
-            if (like == null)
-            {
-                return NotFound();
-            }
-
-            await _likeRepository.Delete(like);
-
-            return NoContent();
-        }
     }
 }

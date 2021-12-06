@@ -31,7 +31,7 @@ namespace Patreon.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
         }
-
+        // Post: api/Authenticate/register
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
@@ -52,6 +52,14 @@ namespace Patreon.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            if(model.IsAuthor)
+            {
+                await _userManager.AddToRoleAsync(user, "author");
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, "user");
+            }
             if(!result.Succeeded)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
@@ -60,6 +68,7 @@ namespace Patreon.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully" });
         }
 
+        // Post: api/Authenticate/login
         [HttpPost]
         [Route("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
@@ -93,6 +102,22 @@ namespace Patreon.Controllers
                     token = new JwtSecurityTokenHandler().WriteToken(token),
                     expiration = token.ValidTo
                 });
+            }
+
+            return Unauthorized();
+        }
+
+        // Post: api/Authenticate/changepass
+        [HttpPost]
+        [Route("changepass")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordModel model)
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+                IdentityResult result = await _userManager.ChangePasswordAsync(user, model.oldPassword, model.newPassword);
+                return Ok();
             }
 
             return Unauthorized();

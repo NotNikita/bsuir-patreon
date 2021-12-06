@@ -75,7 +75,7 @@ namespace Patreon.Controllers
             return NoContent();
         }
 
-        //POST: api/Subscriptions
+        //POST: api/Subscriptions/idSubType
         [HttpPost("{idSubType}")]
         public async Task<ActionResult<Subscription>> Subscribe(Subscription subscription, int idSubType)
         {
@@ -90,9 +90,10 @@ namespace Patreon.Controllers
                 subscription.User = user;
                 subscription.Author = author;
                 subscription.Sub = authorSub;
-
+                subscription.StartTime = DateTime.Now;
+                subscription.EndTime = subscription.StartTime.AddDays((double)authorSub.Duration);
                 user.Balance -= subscription.Sub.Price;
-
+                author.Balance += subscription.Sub.Price;
                 await _userManager.UpdateAsync(user);
                 await _subscriptionRepository.Create(subscription);
             }
