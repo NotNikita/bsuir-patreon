@@ -22,5 +22,6 @@ namespace Data.Models.DTO
         public string Password { get; set; }
         [Required]
         public string ConfirmPassword { get; set; }
+        public bool IsAuthor { get; set; }
     }
 }

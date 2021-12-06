@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -31,7 +32,6 @@ namespace Patreon.Controllers
         }
         // GET: api/<UserController>
         [HttpGet]
-        [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetCustomers()
         {
             return await _context.Users.ToListAsync();
@@ -51,18 +51,79 @@ namespace Patreon.Controllers
             return user;
         }
 
-        [HttpGet("followers/{userId}")]
-        public async Task<IEnumerable<User>> GetFollowers(string userId)
+        // GET: api/User/followers
+        [HttpGet("followers")]
+        public async Task<IEnumerable<User>> GetFollowers()
         {
-            var followers = await _userRepository.GetFollowers(userId);
-            return followers;
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                var followers = await _userRepository.GetFollowers(user.Id);
+                return followers;
+
+            }
+            return null;
         }
 
-        [HttpGet("subscribes/{userId}")]
-        public async Task<IEnumerable<User>> GetSubscribes(string userId)
+        // GET: api/User/subscribes
+        [HttpGet("subscribes")]
+        public async Task<IEnumerable<User>> GetSubscribes()
         {
-            var subscriptions = await _userRepository.GetSubscriptions(userId);
-            return subscriptions;
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                var subscriptions = await _userRepository.GetSubscriptions(user.Id);
+                return subscriptions;
+
+            }
+            return null;
         }
+
+        // POST: api/User/replenish/500
+        [HttpPost("replenish/{amount}")]
+        public async Task<ActionResult> AddMoney(uint amount)
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+                user.Balance += amount;
+                await _userManager.UpdateAsync(user);
+                return Ok("Пополнение баланса проведено успешно");
+
+            }
+            return Unauthorized();
+        }
+
+        // DELETE: api/User/4
+        [HttpDelete("id")]
+        public async Task<ActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            await _userManager.DeleteAsync(user);
+            return Ok($"{user.UserName} успешно удален");
+        }
+
+        // POST: api/User/role/5/moderator
+        [HttpPost("role/{id}/{nameRole}")]
+        public async Task<ActionResult> ChangeRole(string id, string nameRole)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if(await _userManager.IsInRoleAsync(user, nameRole))
+            {
+                await _userManager.RemoveFromRoleAsync(user, nameRole);
+            }
+            else
+            {
+                await _userManager.AddToRoleAsync(user, nameRole);
+            }
+           
+            return Ok();
+        }
+
     }
 }

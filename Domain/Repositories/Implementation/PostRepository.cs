@@ -13,21 +13,38 @@ namespace Domain.Repositories.Implementation
     {
         private readonly ApplicationContext _context;
         private readonly UserManager<User> _userManager;
-        public PostRepository(ApplicationContext context, UserManager<User> userManager) : base(context)
+        private readonly UserRepository _userRepository;
+        public PostRepository(ApplicationContext context, UserManager<User> userManager, UserRepository userRepository) : base(context)
         {
             _context = context;
             _userManager = userManager;
+            _userRepository = userRepository;
         }
 
         public async Task<IEnumerable<Post>> GetAuthorPosts(User user)
         {
             var posts = await _context.Posts.Include(x => x.Likes).ThenInclude(x=>x.Author).Include(x => x.Comments).ThenInclude(x => x.Author).Where(x => x.Author.Id == user.Id).ToListAsync();
-            return posts;
+            return posts.OrderByDescending(x=>x.PublicationDate);
+        }
+
+        public async Task<IEnumerable<Post>> GetSubPosts(User user)
+        {
+            var full_user = await _context.Users.Include(u => u.Subscriptions).ThenInclude(u => u.Author).Where(x => x.Id == user.Id).FirstOrDefaultAsync();
+            List<Post> posts = new List<Post>();
+            foreach (var u in full_user.Subscriptions)
+            {
+                
+                posts.AddRange(await _context.Posts.Include(x => x.Likes).ThenInclude(x => x.Author)
+                    .Include(x => x.Comments).ThenInclude(x => x.Author)
+                    .Where(x=>x.Author == u.Author && x.IsChecked == true).ToListAsync());
+            }
+
+            return posts.OrderByDescending(x => x.PublicationDate); ;
         }
 
         public async Task<Post> GetPostWithData(int postId)
         {
-            var post = await _context.Posts.Include(x => x.Likes).Include(x=>x.Comments).FirstAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Likes).ThenInclude(x=>x.Author).Include(x=>x.Comments).ThenInclude(x => x.Author).FirstAsync(x => x.Id == postId);
             return post;
         }
 
@@ -39,8 +56,15 @@ namespace Domain.Repositories.Implementation
                 Author = user,
                 Post = post
             };
-
-            _context.Likes.Add(like);
+            var find = _context.Likes.Where(u => u.Author.UserName == user.UserName && u.Post.Id == postId).FirstOrDefault();
+            if (find is null)
+            {
+                _context.Likes.Add(like);
+            }
+            else
+            {
+                _context.Likes.Remove(find);
+            }
             _context.Posts.Update(post);
             await _context.SaveChangesAsync();
         }

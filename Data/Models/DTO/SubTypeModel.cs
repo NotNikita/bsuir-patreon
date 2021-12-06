@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Models
+namespace Data.Models.DTO
 {
-    public class SubscriptionType:BaseEntity
+    public class SubTypeModel
     {
         public string Name { get; set; }
         public string Description { get; set; }
         public uint Price { get; set; }
-        public User Author { get; set; }
         public int Duration { get; set; }
     }
 }

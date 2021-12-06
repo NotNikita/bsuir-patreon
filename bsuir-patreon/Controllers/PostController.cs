@@ -47,8 +47,8 @@ namespace Patreon.Controllers
 
             return post;
         }
-        // POST: api/Post/getMyPosts
-        [HttpPost("getMyPosts")]
+        // GET: api/Post/getMyPosts
+        [HttpGet("getMyPosts")]
         public async Task<IEnumerable<Post>> GetMyPosts()
         {
             if (HttpContext.User.Identity is ClaimsIdentity identity)
@@ -57,6 +57,24 @@ namespace Patreon.Controllers
                 var user = await _userManager.FindByNameAsync(name);
 
                 var posts = await _postRepository.GetAuthorPosts(user);
+
+                return posts;
+
+            }
+
+            return null;
+        }
+
+        // GET: api/Post/getSubPosts
+        [HttpGet("getSubPosts")]
+        public async Task<IEnumerable<Post>> GetSubPosts()
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+
+                var posts = await _postRepository.GetSubPosts(user);
 
                 return posts;
 
@@ -91,6 +109,7 @@ namespace Patreon.Controllers
                 var user = await _userManager.FindByNameAsync(name);
 
                 post.Author = user;
+                post.PublicationDate = DateTime.Now;
                 await _postRepository.Create(post);
             }
             
@@ -112,8 +131,8 @@ namespace Patreon.Controllers
             return NoContent();
         }
 
-        //api/Post/addlike/{}
-        [HttpPost("addlike{postId}")]
+        //api/Post/addlike/
+        [HttpPost("addlike/{postId}")]
         public async Task<IActionResult> AddLike(int postId)
         {
 
@@ -126,6 +145,13 @@ namespace Patreon.Controllers
             return NoContent();
         }
 
-
+        // POST: api/Post/approve/4
+        [HttpPost("approve/{postId}")]
+        public async Task<IActionResult> Approve(int postId)
+        {
+            var post = await _postRepository.FindById(postId);
+            post.IsChecked = true;
+            return Ok("Пост принят");
+        }
     }
 }

@@ -43,6 +43,7 @@ namespace Services.Implementation
                     message = $"Привет {sub.User.UserName}! Твоя подписка на пользователя {sub.Author.UserName} была автоматически продлена";
                     subject = $"Продление подписки";
                     sub.User.Balance -= sub.Sub.Price;
+                    sub.Author.Balance += sub.Sub.Price;
                     var dateDiff = sub.EndTime - sub.StartTime;
                     sub.StartTime = DateTime.UtcNow;
                     sub.EndTime = sub.StartTime + dateDiff;
