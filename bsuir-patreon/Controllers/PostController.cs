@@ -14,6 +14,7 @@ using System.Security.Claims;
 
 namespace Patreon.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class PostController : ControllerBase

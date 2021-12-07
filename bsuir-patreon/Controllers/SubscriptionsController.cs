@@ -13,9 +13,11 @@ using Data.Models;
 using System.Security.Claims;
 using Hangfire;
 using Services.Implementation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Patreon.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SubscriptionsController : ControllerBase

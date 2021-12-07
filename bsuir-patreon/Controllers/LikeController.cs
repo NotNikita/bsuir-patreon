@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Data;
 using Domain;
 using Domain.Repositories.Implementation;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Patreon.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class LikeController : ControllerBase
