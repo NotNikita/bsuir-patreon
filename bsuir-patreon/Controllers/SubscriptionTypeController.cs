@@ -12,9 +12,11 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Data;
 using Data.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Patreon.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class SubscriptionTypeController : ControllerBase
