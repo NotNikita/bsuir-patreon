@@ -125,5 +125,13 @@ namespace Patreon.Controllers
             return Ok();
         }
 
+        // POST: api/User/find/forbz
+        [HttpPost("find/{username}")]
+        public async Task<IEnumerable<User>> FindUser(string username)
+        {
+            var user = await _userRepository.FindUsers(username);
+            return user;
+        }
+
     }
 }

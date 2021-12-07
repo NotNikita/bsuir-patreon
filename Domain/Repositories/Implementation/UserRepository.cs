@@ -44,5 +44,11 @@ namespace Domain.Repositories.Implementation
             }
             return subscribes;
         }
+
+        public async Task<IEnumerable<User>> FindUsers(string username)
+        {
+            var users = await _context.Users.Where(x => x.UserName.Contains(username)).ToListAsync();
+            return users;
+        }
     }
 }
