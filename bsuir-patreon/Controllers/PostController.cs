@@ -32,7 +32,7 @@ namespace Patreon.Controllers
         [HttpGet]
         public async Task<IEnumerable<Post>> GetPosts()
         {
-            return await _postRepository.GetAll();
+            return await _postRepository.GetAllPostsWithData();
         }
 
         // GET: api/Post/5
