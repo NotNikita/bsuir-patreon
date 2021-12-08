@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from 'react-router';
 import Layout from './components/Layout';
 import Posts from './components/Posts';
 import Counter from './components/Counter';
+import Profile from './components/profile/profile.component';
 import FetchData from './components/FetchData';
 import SignInAndSignUpPage from './pages/signin-signup/signin-signup.component';
 
@@ -15,6 +16,7 @@ import { UserKnownAction, UserState } from './store/user/user.reducer';
 
 import './custom.css'
 import { useAuth } from './auth';
+
 
 type AppProps =
     UserState // ... state we've requested from the Redux store
@@ -53,6 +55,7 @@ const App = (props: AppProps) => {
                     )
                 }
                 />
+                <Route path='/profile' component={Profile} />
             </Switch>
         </Layout>
     )

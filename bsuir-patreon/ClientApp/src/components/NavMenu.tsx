@@ -42,7 +42,6 @@ const NavMenu = (props: UserState) => {
     const [logged] = useAuth();
     const { currentUser } = props;
     const [displayName, setDisplayName] = React.useState<string>(currentUser ? currentUser.username : '');
-    console.log('navmenu: ', currentUser);
 
     React.useEffect(() => {
         if (currentUser) setDisplayName(currentUser.username);
