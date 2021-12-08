@@ -4,7 +4,10 @@ import { Link } from 'react-router-dom';
 import { PersonCircle } from 'react-bootstrap-icons';
 import { ReactComponent as Logo } from '../assets/svg/crown.svg';
 
-//i mport './NavMenu.css';
+import { connect } from 'react-redux';
+import { ApplicationState } from '../store';
+import { UserState } from '../store/user/user.reducer';
+import { useAuth, logout } from '../auth';
 
 const Header = styled.header({
     height: '70px',
@@ -29,9 +32,21 @@ const Option = styled.div({
     padding: '10px 15px',
     cursor: 'pointer'
 });
+const ProfileUsername = styled.span({
+    marginLeft: 5,
+    fontWeight: 500
+});
 
-const NavMenu = () => {
-    const [userStatus] = React.useState<boolean>(false);
+
+const NavMenu = (props: UserState) => {
+    const [logged] = useAuth();
+    const { currentUser } = props;
+    const [displayName, setDisplayName] = React.useState<string>(currentUser ? currentUser.username : '');
+    console.log('navmenu: ', currentUser);
+
+    React.useEffect(() => {
+        if (currentUser) setDisplayName(currentUser.username);
+    }, [currentUser])
 
     return (
         <Header>
@@ -52,8 +67,8 @@ const NavMenu = () => {
                     </Link>
                 </Option>
 
-                {userStatus ? (
-                    <Option onClick={() => console.log('call signOut function here')}>
+                {logged ? (
+                    <Option onClick={() => logout()}>
                         SIGN OUT
                     </Option>
                 ) : (
@@ -63,9 +78,24 @@ const NavMenu = () => {
                         </Link>
                     </Option>
                 )}
-                <PersonCircle size={30} />
+                {currentUser && (
+                    <Link className='option' to='/profile'>
+                        <PersonCircle size={30} />
+                        <ProfileUsername key={displayName}>{displayName}</ProfileUsername>
+                    </Link>
+                )}
+
             </Options>
         </Header>
     )
 };
-export default NavMenu;
+
+const mapStateToProps = (state: ApplicationState) => {
+    return state.user ?
+        { currentUser: state.user.currentUser } :
+        { currentUser: null };
+};
+
+export default connect(
+    mapStateToProps
+)(NavMenu);
