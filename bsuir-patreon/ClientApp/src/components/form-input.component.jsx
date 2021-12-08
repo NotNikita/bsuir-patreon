@@ -37,8 +37,8 @@ const FormInputLabel = styled.label({
     top: '10',
     transition: '300ms ease all',
     '&.shrink': {
-        top: -14,
-        fontSize: 12,
+        top: -18,
+        fontSize: '0.8rem',
         color: 'black',
     }
 });

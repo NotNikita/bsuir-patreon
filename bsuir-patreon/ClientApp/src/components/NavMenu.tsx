@@ -32,10 +32,21 @@ const Option = styled.div({
     padding: '10px 15px',
     cursor: 'pointer'
 });
+const ProfileUsername = styled.span({
+    marginLeft: 5,
+    fontWeight: 500
+});
 
 
 const NavMenu = (props: UserState) => {
     const [logged] = useAuth();
+    const { currentUser } = props;
+    const [displayName, setDisplayName] = React.useState<string>(currentUser ? currentUser.username : '');
+    console.log('navmenu: ', currentUser);
+
+    React.useEffect(() => {
+        if (currentUser) setDisplayName(currentUser.username);
+    }, [currentUser])
 
     return (
         <Header>
@@ -67,18 +78,22 @@ const NavMenu = (props: UserState) => {
                         </Link>
                     </Option>
                 )}
-                <Link className='option' to='/profile'>
-                    <PersonCircle size={30} />
-                </Link>
+                {currentUser && (
+                    <Link className='option' to='/profile'>
+                        <PersonCircle size={30} />
+                        <ProfileUsername key={displayName}>{displayName}</ProfileUsername>
+                    </Link>
+                )}
+
             </Options>
         </Header>
     )
 };
 
 const mapStateToProps = (state: ApplicationState) => {
-    return state.user ? { currentUser: state.user.currentUser } : {
-        currentUser: null
-    };
+    return state.user ?
+        { currentUser: state.user.currentUser } :
+        { currentUser: null };
 };
 
 export default connect(

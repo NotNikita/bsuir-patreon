@@ -1,13 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { apiHostname, authFetch } from '../auth';
+import { useAuth, apiHostname, authFetch } from '../auth';
 import { Post } from './post/post.types';
 
 const Posts = () => {
+  const [logged] = useAuth();
   const [posts, setPosts] = React.useState<Post[]>([]);
 
   React.useEffect(() => {
-    authFetch(apiHostname + 'api/Post', {
+    logged && authFetch(apiHostname + 'api/Post', {
       headers: {
         "Transfer-Encoding": "buffered",
         'Content-Type': 'application/json; charset=UTF-8'
@@ -15,7 +16,7 @@ const Posts = () => {
     })
       .then(r => r.json())
       .then(_posts => setPosts(_posts))
-  }, []);
+  }, [logged]);
 
   return (
     <div>

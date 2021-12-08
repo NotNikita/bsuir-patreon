@@ -1,8 +1,14 @@
-import React, { useState } from 'react'
-import FormInput from './form-input.component'
-import CustomButton from './custom-button.component'
-import styled from '@emotion/styled'
+import React, { useState } from 'react';
+import FormInput from './form-input.component';
+import CustomButton from './custom-button.component';
+import styled from '@emotion/styled';
 import { login, apiHostname } from '../auth';
+
+import { Dispatch } from 'redux';
+import { connect } from 'react-redux';
+import { actionCreators } from '../store/user/user.actions';
+import { UserProps } from '../store/user/user.types';
+import { UserKnownAction } from '../store/user/user.reducer';
 
 
 const SignInDiv = styled.div({
@@ -20,12 +26,12 @@ const SignInButtons = styled.div({
     justifyContent: 'space-between'
 });
 
-const SignIn = () => {
-    const [email, setEmail] = useState('')
+const SignIn = (props: typeof actionCreators) => {
+    const [displayName, setDisplayName] = useState('')
     const [password, setPassword] = useState('')
 
-    const handleSubmit = event => {
-        if (event) event.preventDefault()
+    const handleSubmit = (event: React.SyntheticEvent): void => {
+        if (event) event.preventDefault();
 
         try {
             fetch(apiHostname + 'api/Authenticate/login', {
@@ -34,7 +40,7 @@ const SignIn = () => {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    username: email,
+                    username: displayName,
                     password: password
                 })
             })
@@ -46,19 +52,23 @@ const SignIn = () => {
                         accessToken: token.token,
                         refreshToken: ''
                     })
-                })
+                });
 
-            setEmail('')
-            setPassword('')
-        } catch (error) {
-            console.log('error occured in sign-in handleSubmit ' + error.message)
+            props.setCurrentUser({
+                username: displayName,
+                password: password
+            })
+            setDisplayName('');
+            setPassword('');
+        } catch (err) {
+            console.log('error occured in sign-in handleSubmit ');
         }
     }
-    const handleChange = event => {
-        const { value, name } = event.target;
+    const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+        const { value, name } = event.currentTarget;
         // if there will be more than 2 fiels, this will be bad
-        name === 'email' ? setEmail(value) : setPassword(value)
-    }
+        name === 'displayName' ? setDisplayName(value) : setPassword(value);
+    };
 
     return (
         <SignInDiv>
@@ -66,8 +76,8 @@ const SignIn = () => {
             <span>Sign in with your username and password</span>
 
             <form onSubmit={handleSubmit}>
-                <FormInput name='email' type='text' label='username'
-                    handleChange={handleChange} value={email} required />
+                <FormInput name='displayName' type='text' label='Display name'
+                    handleChange={handleChange} value={displayName} required />
 
                 <FormInput name='password' type='password' label='password'
                     handleChange={handleChange} value={password} required />
@@ -80,4 +90,14 @@ const SignIn = () => {
     )
 }
 
-export default SignIn
+const mapDispatchToProps = (dispatch: Dispatch<UserKnownAction>) => ({
+    setCurrentUser: (user: UserProps) => dispatch({
+        type: 'SET_CURRENT_USER',
+        payload: user
+    })
+});
+
+export default connect(
+    null,
+    mapDispatchToProps
+)(SignIn);

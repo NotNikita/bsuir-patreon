@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from '@emotion/styled'
 
-import SignIn from '../../components/sign-in.component'
+import SignIn from '../../components/sign-in.component.tsx'
 import SignUp from '../../components/sign-up.component'
 
 const SignInAndSignUpDiv = styled.div({
