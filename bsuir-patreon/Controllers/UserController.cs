@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -115,7 +116,7 @@ namespace Patreon.Controllers
         public async Task<ActionResult> ChangeRole(string id, string nameRole)
         {
             var user = await _userManager.FindByIdAsync(id);
-            if(await _userManager.IsInRoleAsync(user, nameRole))
+            if (await _userManager.IsInRoleAsync(user, nameRole))
             {
                 await _userManager.RemoveFromRoleAsync(user, nameRole);
             }
@@ -123,7 +124,7 @@ namespace Patreon.Controllers
             {
                 await _userManager.AddToRoleAsync(user, nameRole);
             }
-           
+
             return Ok();
         }
 
@@ -135,5 +136,22 @@ namespace Patreon.Controllers
             return user;
         }
 
+        // Текущий пользователь с ролью
+        // GET: api/User/currentuser
+        [HttpGet("currentuser")]
+        public async Task<ActionResult<string>> CurrentUser()
+        {
+            if (HttpContext.User.Identity is ClaimsIdentity identity)
+            {
+                var name = identity.FindFirst(ClaimTypes.Name).Value;
+                var user = await _userManager.FindByNameAsync(name);
+                var roles = await _userManager.GetRolesAsync(user);
+                string output = JsonConvert.SerializeObject(user);
+                output = output.Insert(output.Length - 1, $",\"Role\":\"{roles[0]}\"");
+                return output;
+            }
+            return Unauthorized();
+
+        }
     }
 }
