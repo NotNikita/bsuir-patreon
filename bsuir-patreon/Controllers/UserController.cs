@@ -139,7 +139,7 @@ namespace Patreon.Controllers
         // Текущий пользователь с ролью
         // GET: api/User/currentuser
         [HttpGet("currentuser")]
-        public async Task<ActionResult<string>> CurrentUser()
+        public async Task<JsonResult> CurrentUser()
         {
             if (HttpContext.User.Identity is ClaimsIdentity identity)
             {
@@ -148,9 +148,9 @@ namespace Patreon.Controllers
                 var roles = await _userManager.GetRolesAsync(user);
                 string output = JsonConvert.SerializeObject(user);
                 output = output.Insert(output.Length - 1, $",\"Role\":\"{roles[0]}\"");
-                return output;
+                return new JsonResult(new { user = user, role = roles[0] });
             }
-            return Unauthorized();
+            return null;
 
         }
     }
