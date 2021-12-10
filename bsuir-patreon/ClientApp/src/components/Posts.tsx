@@ -3,6 +3,11 @@ import { connect } from 'react-redux';
 import { useAuth, apiHostname, authFetch } from '../auth';
 import { Post } from './post/post.types';
 import styled from '@emotion/styled';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Typography from '@material-ui/core/Typography';
+import { CardActionArea } from '@material-ui/core';
 
 const PostsTitle = styled.p({
   boxSizing: 'border-box',
@@ -51,12 +56,24 @@ const Posts = () => {
       <div>
         {posts.length ? posts.map(post =>
           <>
-            <div key={post.id}>
-              {`postid: ${post.content}`}
-            </div>
-            <div key={post.content}>
-              {`content: ${post.content}`}
-            </div>
+            <Card style={{ maxWidth: 345 }}>
+              <CardActionArea>
+                <CardMedia
+                  component="img"
+                  height="140"
+                  image={post.fileUrl ? post.fileUrl : 'https://mui.com/static/images/cards/contemplative-reptile.jpg'}
+                  alt="green iguana"
+                />
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {post.author}
+                  </Typography>
+                  <Typography variant="body2">
+                    {post.content}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
           </>)
           :
           <EmptyComponent>Unfortunately, the data is not available to you</EmptyComponent>}

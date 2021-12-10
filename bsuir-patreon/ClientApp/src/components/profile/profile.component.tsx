@@ -47,7 +47,7 @@ const Profile = (props: UserState & typeof actionCreators) => {
             .then(userJson => {
                 console.log(userJson);
                 setUser({
-                    ...userJson
+                    ...userJson.user
                 })
             });
 
