@@ -53,6 +53,14 @@ namespace Patreon.Controllers
             return subscriptionType;
         }
 
+        // GET: api/SubscriptionType/authorsubs/5
+        [HttpGet("authorsubs/{id}")]
+        public async Task<IEnumerable<SubscriptionType>> GetAuthorSubTypes(string id)
+        {
+            var subs = await _context.SubscriptionTypes.Include(x => x.Author).Where(x => x.Author.Id == id).ToListAsync();
+            return subs;
+        }
+
         // POST: api/SubscriptionType
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
