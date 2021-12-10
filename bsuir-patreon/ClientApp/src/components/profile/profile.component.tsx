@@ -44,9 +44,12 @@ const Profile = (props: UserState & typeof actionCreators) => {
             }
         })
             .then(r => r.json())
-            .then(userJson => setUser({
-                ...userJson
-            }));
+            .then(userJson => {
+                console.log(userJson);
+                setUser({
+                    ...userJson
+                })
+            });
 
     }, [currentUser])
     const handleChangePassword = async (oldP: string, newP: string) => {
