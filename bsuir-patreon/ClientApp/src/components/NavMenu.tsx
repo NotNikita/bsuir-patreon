@@ -59,13 +59,8 @@ const NavMenu = (props: UserState & typeof actionCreators) => {
             </LogoContainer>
             <Options>
                 <Option>
-                    <Link to='/counter'>
-                        COUNTER
-                    </Link>
-                </Option>
-                <Option>
-                    <Link to='/fetch-data'>
-                        FETCH DATA
+                    <Link to='/'>
+                        HOME
                     </Link>
                 </Option>
 

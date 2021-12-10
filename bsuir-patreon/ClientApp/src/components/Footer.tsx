@@ -9,15 +9,15 @@ const CommentCard = styled.div({
     display: 'flex',
     width: '100%',
     justifyContent: 'center',
-    fontSize: '2.4rem',
-    backgroundColor: 'grey'
+    fontSize: '1.5rem',
+    backgroundColor: '#eeeaea'
 });
 
 const Footer = () => {
     return (
         <footer>
             <CommentCard>
-                This is footer
+                2021. All right reserved
             </CommentCard>
         </footer>
     );
