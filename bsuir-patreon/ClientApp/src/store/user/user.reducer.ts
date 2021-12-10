@@ -1,5 +1,5 @@
 import { Action, Reducer } from 'redux';
-import { SetUserAction } from './user.actions';
+import { SetUserAction, ChangePasswordAction } from './user.actions';
 import { UserActionTypes, UserProps } from './user.types';
 
 export interface UserState {
@@ -9,7 +9,7 @@ export interface UserState {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 // | InterfaceOfAction2 | InterfaceOfAction3
-export type UserKnownAction = SetUserAction;
+export type UserKnownAction = SetUserAction | ChangePasswordAction;
 
 
 // ----------------
@@ -23,7 +23,19 @@ export const reducer: Reducer<UserState> = (state: UserState | undefined, incomi
     const action = incomingAction as UserKnownAction;
     switch (action.type) {
         case UserActionTypes.SET_CURRENT_USER:
-            return { currentUser: action.payload };
+            const trueAction1 = action as SetUserAction;
+            return { currentUser: trueAction1.payload };
+        case UserActionTypes.CHANGE_PASSWORD_USER:
+            const trueAction2 = action as ChangePasswordAction;
+            if (state.currentUser && trueAction2.payload.oldPassword === state.currentUser.password) {
+                return {
+                    currentUser: {
+                        ...state.currentUser,
+                        password: trueAction2.payload.newPassword
+                    } as UserProps
+                };
+            } else
+                return state;
         default:
             return state;
     }

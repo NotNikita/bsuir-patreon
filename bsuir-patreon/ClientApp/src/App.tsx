@@ -3,18 +3,20 @@ import { Route, Switch, Redirect } from 'react-router';
 import Layout from './components/Layout';
 import Posts from './components/Posts';
 import Counter from './components/Counter';
+import Profile from './components/profile/profile.component';
 import FetchData from './components/FetchData';
 import SignInAndSignUpPage from './pages/signin-signup/signin-signup.component';
 
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ApplicationState } from './store';
-import { UserProps } from './store/user/user.types';
+import { PasswordChangingProps, UserProps } from './store/user/user.types';
 import { actionCreators } from './store/user/user.actions';
 import { UserKnownAction, UserState } from './store/user/user.reducer';
 
 import './custom.css'
 import { useAuth } from './auth';
+
 
 type AppProps =
     UserState // ... state we've requested from the Redux store
@@ -53,6 +55,7 @@ const App = (props: AppProps) => {
                     )
                 }
                 />
+                <Route path='/profile' component={Profile} />
             </Switch>
         </Layout>
     )
@@ -67,6 +70,10 @@ const mapDispatchToProps = (dispatch: Dispatch<UserKnownAction>) => ({
     setCurrentUser: (user: UserProps) => dispatch({
         type: 'SET_CURRENT_USER',
         payload: user
+    }),
+    changeUserPassword: (passwords: PasswordChangingProps) => dispatch({
+        type: 'CHANGE_PASSWORD_USER',
+        payload: passwords
     })
 })
 
