@@ -11,11 +11,15 @@ const Posts = () => {
     logged && authFetch(apiHostname + 'api/Post', {
       headers: {
         "Transfer-Encoding": "buffered",
-        'Content-Type': 'application/json; charset=UTF-8'
+        'accept': 'application/json'
       }
     })
       .then(r => r.json())
-      .then(_posts => setPosts(_posts))
+      .then(_posts => {
+
+        console.log('posts: ', _posts)
+        setPosts(_posts)
+      })
   }, [logged]);
 
   return (

@@ -2,8 +2,26 @@ import React from "react";
 import { UserProfile } from "./profile.component";
 import "./profile.styles.css";
 
+import { Backdrop, Box, Modal, Fade, Button } from '@material-ui/core';
+import FormInput from "../form-input.component";
 
-const UserDetails: React.FC<{ userProp: UserProfile }> = ({ userProp }) => {
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+const UserDetails: React.FC<{ userProp: UserProfile, onChangePass: (oldPass: string, newPass: string) => void }> = ({ userProp, onChangePass }) => {
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const [information, setInformation] = React.useState<UserProfile>({
         id: 'default',
         name: 'temp',
@@ -16,12 +34,31 @@ const UserDetails: React.FC<{ userProp: UserProfile }> = ({ userProp }) => {
         phoneNumber: '+123',
         lockoutEnabled: false
     })
-
     React.useEffect(() => {
         setInformation({
             ...userProp
         })
     }, [userProp])
+
+    const [passwords, setPasswords] = React.useState({
+        oldPassword: '',
+        newPassword: ''
+    })
+    const handleChange = (event: React.FormEvent<HTMLInputElement>) => {
+        const { name, value } = event.currentTarget
+        setPasswords({
+            ...passwords,
+            [name]: value
+        })
+    }
+    const localSubmit = (event: React.SyntheticEvent) => {
+        if (event) event.preventDefault();
+        onChangePass(passwords.oldPassword, passwords.newPassword);
+        setPasswords({
+            oldPassword: '',
+            newPassword: ''
+        })
+    }
 
     return (
         <div className="box">
@@ -60,7 +97,48 @@ const UserDetails: React.FC<{ userProp: UserProfile }> = ({ userProp }) => {
                                 </div>
                             </div>
 
-                            <div className="mb-4 bg-light d-flex justify-content-end text-center">
+                            <div className="mb-4 bg-light d-flex justify-content-between align-content-center text-center">
+                                <ul className="list-inline mb-1">
+                                    <li className="list-inline-item px-5">
+                                        <Button onClick={handleOpen}>Change password</Button>
+                                        <Modal
+                                            aria-labelledby="transition-modal-title"
+                                            aria-describedby="transition-modal-description"
+                                            open={open}
+                                            onClose={handleClose}
+                                            closeAfterTransition
+                                            BackdropComponent={Backdrop}
+                                            BackdropProps={{
+                                                timeout: 500,
+                                            }}
+                                        >
+                                            <Fade in={open}>
+                                                <Box sx={style}>
+                                                    <form onSubmit={localSubmit} className="sign-up-form">
+                                                        <span className="d-flex justify-content-center">Change My Password</span>
+                                                        <FormInput
+                                                            type='text'
+                                                            name='oldPassword'
+                                                            value={passwords.oldPassword}
+                                                            handleChange={handleChange}
+                                                            label='Old Password'
+                                                            required
+                                                        />
+                                                        <FormInput
+                                                            type='text'
+                                                            name='newPassword'
+                                                            value={passwords.newPassword}
+                                                            handleChange={handleChange}
+                                                            label='New Password'
+                                                            required
+                                                        />
+                                                        <Button type='submit'>Change Password!</Button>
+                                                    </form>
+                                                </Box>
+                                            </Fade>
+                                        </Modal>
+                                    </li>
+                                </ul>
                                 <ul className="list-inline mb-1">
                                     <li className="list-inline-item px-5">
                                         <h5 className="font-weight-bold mb-0 d-block">
@@ -90,7 +168,7 @@ const UserDetails: React.FC<{ userProp: UserProfile }> = ({ userProp }) => {
                             </div>
 
                             <div className="px-4">
-                                <h5 className="mb-0">Description</h5>
+                                <h5 className="mb-0">Subscriptions</h5>
                                 <div className="p-4 rounded shadow-sm bg-light">
                                     <p className="font-italic mb-0">Here will be list of Subscriptions in circles</p>
                                 </div>

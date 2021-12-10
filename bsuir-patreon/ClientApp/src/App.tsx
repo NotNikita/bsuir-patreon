@@ -10,7 +10,7 @@ import SignInAndSignUpPage from './pages/signin-signup/signin-signup.component';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { ApplicationState } from './store';
-import { UserProps } from './store/user/user.types';
+import { PasswordChangingProps, UserProps } from './store/user/user.types';
 import { actionCreators } from './store/user/user.actions';
 import { UserKnownAction, UserState } from './store/user/user.reducer';
 
@@ -70,6 +70,10 @@ const mapDispatchToProps = (dispatch: Dispatch<UserKnownAction>) => ({
     setCurrentUser: (user: UserProps) => dispatch({
         type: 'SET_CURRENT_USER',
         payload: user
+    }),
+    changeUserPassword: (passwords: PasswordChangingProps) => dispatch({
+        type: 'CHANGE_PASSWORD_USER',
+        payload: passwords
     })
 })
 

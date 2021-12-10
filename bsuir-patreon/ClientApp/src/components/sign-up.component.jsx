@@ -2,6 +2,7 @@ import React from 'react'
 
 import FormInput from './form-input.component'
 import CustomButton from './custom-button.component'
+import { Switch, FormControlLabel } from '@material-ui/core';
 import styled from '@emotion/styled'
 import { apiHostname } from '../auth';
 
@@ -26,12 +27,13 @@ const SignUp = () => {
         email: '',
         password: '',
         confirmPassword: '',
+        isAuthor: false
     })
 
     const handleSubmit = async event => {
         if (event) event.preventDefault()
 
-        const { displayName, email, password, confirmPassword, name, surname } = credentials
+        const { displayName, email, password, confirmPassword, name, surname, isAuthor } = credentials
 
         if (password !== confirmPassword) {
             alert("passwords don't match")
@@ -50,7 +52,8 @@ const SignUp = () => {
                     surname: surname,
                     email: email,
                     password: password,
-                    confirmPassword: confirmPassword
+                    confirmPassword: confirmPassword,
+                    isAuthor: isAuthor
                 })
             })
                 .then(r => r.json())
@@ -66,6 +69,7 @@ const SignUp = () => {
                 email: '',
                 password: '',
                 confirmPassword: '',
+                isAuthor: false
             });
         } catch (error) {
             console.error(error)
@@ -77,6 +81,12 @@ const SignUp = () => {
         setCredentials({
             ...credentials,
             [name]: value
+        })
+    }
+    const handleRadio = event => {
+        setCredentials({
+            ...credentials,
+            isAuthor: !credentials.isAuthor
         })
     }
 
@@ -106,7 +116,7 @@ const SignUp = () => {
                     name='surname'
                     value={credentials.surname}
                     onChange={handleChange}
-                    label='Your name surname'
+                    label='Your surname'
                     required
                 />
                 <FormInput
@@ -133,6 +143,7 @@ const SignUp = () => {
                     label='Confirm password'
                     required
                 />
+                <FormControlLabel control={<Switch onChange={handleRadio} value={credentials.isAuthor} />} label="Are you author?" />
                 <CustomButton type='submit'>SIGN UP</CustomButton>
             </form>
         </SignUpDiv>

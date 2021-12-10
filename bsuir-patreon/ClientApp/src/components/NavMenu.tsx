@@ -6,8 +6,11 @@ import { ReactComponent as Logo } from '../assets/svg/crown.svg';
 
 import { connect } from 'react-redux';
 import { ApplicationState } from '../store';
-import { UserState } from '../store/user/user.reducer';
+import { UserKnownAction, UserState } from '../store/user/user.reducer';
 import { useAuth, logout } from '../auth';
+import { actionCreators } from '../store/user/user.actions';
+import { Dispatch } from 'redux';
+import { PasswordChangingProps, UserProps } from '../store/user/user.types';
 
 const Header = styled.header({
     height: '70px',
@@ -38,7 +41,7 @@ const ProfileUsername = styled.span({
 });
 
 
-const NavMenu = (props: UserState) => {
+const NavMenu = (props: UserState & typeof actionCreators) => {
     const [logged] = useAuth();
     const { currentUser } = props;
     const [displayName, setDisplayName] = React.useState<string>(currentUser ? currentUser.username : '');
@@ -67,7 +70,10 @@ const NavMenu = (props: UserState) => {
                 </Option>
 
                 {logged ? (
-                    <Option onClick={() => logout()}>
+                    <Option onClick={() => {
+                        logout();
+                        props.setCurrentUser({ username: '', password: '' } as UserProps)
+                    }}>
                         SIGN OUT
                     </Option>
                 ) : (
@@ -77,7 +83,7 @@ const NavMenu = (props: UserState) => {
                         </Link>
                     </Option>
                 )}
-                {currentUser && (
+                {logged && currentUser && (
                     <Link className='option' to='/profile'>
                         <PersonCircle size={30} />
                         <ProfileUsername key={displayName}>{displayName}</ProfileUsername>
@@ -94,7 +100,18 @@ const mapStateToProps = (state: ApplicationState) => {
         { currentUser: state.user.currentUser } :
         { currentUser: null };
 };
+const mapDispatchToProps = (dispatch: Dispatch<UserKnownAction>) => ({
+    setCurrentUser: (user: UserProps) => dispatch({
+        type: 'SET_CURRENT_USER',
+        payload: user
+    }),
+    changeUserPassword: (passwords: PasswordChangingProps) => dispatch({
+        type: 'CHANGE_PASSWORD_USER',
+        payload: passwords
+    })
+})
 
 export default connect(
-    mapStateToProps
+    mapStateToProps,
+    mapDispatchToProps
 )(NavMenu);

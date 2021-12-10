@@ -46,18 +46,25 @@ const SignIn = (props: typeof actionCreators) => {
             })
                 .then(r => r.json())
                 .then(token => {
-                    console.log('signin token received: ', token)
-                    login({
-                        ...token,
-                        accessToken: token.token,
-                        refreshToken: ''
-                    })
+                    if (token.status === 401) {
+                        alert('Wrong password or login')
+                    }
+
+                    if (token.token) {
+                        console.log('signin token received: ', token)
+                        login({
+                            ...token,
+                            accessToken: token.token,
+                            refreshToken: ''
+                        })
+                        props.setCurrentUser({
+                            username: displayName,
+                            password: password
+                        })
+                    }
                 });
 
-            props.setCurrentUser({
-                username: displayName,
-                password: password
-            })
+
             setDisplayName('');
             setPassword('');
         } catch (err) {
