@@ -45,13 +45,15 @@ namespace Patreon.Controllers
         public async Task<ActionResult<User>> Get(string username)
         {
             var user = await _userRepository.GetUserWithData(username);
+            var roles = await _userManager.GetRolesAsync(user);
+
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            return user;
+            return new JsonResult(new { user = user, role = roles[0] });
         }
 
         // GET: api/User/followers
