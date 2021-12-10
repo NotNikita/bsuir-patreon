@@ -23,7 +23,7 @@ namespace Domain.Repositories.Implementation
 
         public async Task<IEnumerable<Post>> GetAllPostsWithData()
         {
-            var posts = await _context.Posts.Include(x => x.Likes).ThenInclude(x => x.Author).Include(x => x.Comments).ThenInclude(x => x.Author).ToListAsync();
+            var posts = await _context.Posts.Include(x => x.Likes).ThenInclude(x => x.Author).Include(x => x.Comments).ThenInclude(x => x.Author).Include(x=>x.Author).ToListAsync();
             return posts.OrderByDescending(x => x.PublicationDate);
         }
 
@@ -41,7 +41,7 @@ namespace Domain.Repositories.Implementation
             {
                 
                 posts.AddRange(await _context.Posts.Include(x => x.Likes).ThenInclude(x => x.Author)
-                    .Include(x => x.Comments).ThenInclude(x => x.Author)
+                    .Include(x => x.Comments).ThenInclude(x => x.Author).Include(x=>x.Author)
                     .Where(x=>x.Author == u.Author && x.IsChecked == true).ToListAsync());
             }
 
@@ -50,7 +50,7 @@ namespace Domain.Repositories.Implementation
 
         public async Task<Post> GetPostWithData(int postId)
         {
-            var post = await _context.Posts.Include(x => x.Likes).ThenInclude(x=>x.Author).Include(x=>x.Comments).ThenInclude(x => x.Author).FirstAsync(x => x.Id == postId);
+            var post = await _context.Posts.Include(x => x.Likes).ThenInclude(x=>x.Author).Include(x=>x.Comments).ThenInclude(x => x.Author).Include(x=>x.Author).FirstAsync(x => x.Id == postId);
             return post;
         }
 
