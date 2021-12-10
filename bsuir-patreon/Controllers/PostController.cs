@@ -154,5 +154,13 @@ namespace Patreon.Controllers
             post.IsChecked = true;
             return Ok("Пост принят");
         }
+
+        // GET: api/Post/moderate
+        [HttpGet("moderate")]
+        public async Task<IEnumerable<Post>> GetModeratePost()
+        {
+            var posts = await _postRepository.GetUncheckedPost();
+            return posts;
+        }
     }
 }

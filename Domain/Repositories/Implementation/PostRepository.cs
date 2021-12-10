@@ -74,5 +74,11 @@ namespace Domain.Repositories.Implementation
             _context.Posts.Update(post);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Post>> GetUncheckedPost()
+        {
+            var posts = await _context.Posts.Include(x => x.Author).Where(x => x.IsChecked == false).ToListAsync();
+            return posts.OrderByDescending(x=>x.PublicationDate);
+        }
     }
 }
