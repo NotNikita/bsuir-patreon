@@ -1,5 +1,5 @@
 import { Action, Reducer } from 'redux';
-import { UserProps, UserActionTypes } from "./user.types";
+import { UserProps, PasswordChangingProps } from "./user.types";
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
@@ -10,11 +10,16 @@ export interface SetUserAction {
     type: 'SET_CURRENT_USER',
     payload: UserProps
 }
+export interface ChangePasswordAction {
+    type: 'CHANGE_PASSWORD_USER',
+    payload: PasswordChangingProps
+}
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    setCurrentUser: (user: UserProps) => ({ type: 'DECREMENT_COUNT', payload: user })
+    setCurrentUser: (user: UserProps) => ({ type: 'SET_CURRENT_USER', payload: user }),
+    changeUserPassword: (passwords: PasswordChangingProps) => ({ type: 'CHANGE_PASSWORD_USER', payload: passwords })
 };
